@@ -67,10 +67,13 @@ const signout = async (req, res) => {
 };
 
 const updateSubscription = async (req, res) => {
-  const { email, subscription } = req.body;
-  await User.findOneAndUpdate({ email, subscription });
+  const { id } = req.params;
+  console.log(req.params);
+  const { email, subscription } = req.user;
+  console.log(req.user);
+  await User.findByIdAndUpdate(id, { email, subscription });
 
-  res.status(201).json(result);
+  res.json({ user: { email, subscription } });
 };
 
 export default {
