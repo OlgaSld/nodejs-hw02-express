@@ -36,6 +36,7 @@ authRouter.post("/logout", authenticate, authController.signout);
 
 authRouter.patch(
   "/:id/subscription",
+  authenticate,
   isValidId,
   isEmptyBody,
   validateBody(updSubscriptionSchema),
