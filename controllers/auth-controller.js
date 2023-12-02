@@ -79,19 +79,18 @@ const signout = async (req, res) => {
 };
 
 const updateSubscription = async (req, res) => {
-  const { id } = req.params;
-  const { email, subscription } = req.user;
-  const result = await User.findByIdAndUpdate(id, req.user);
-
-  res.json({ user: { email, subscription: req.user.subscription } });
+  const { _id } = req.user;
+  const { subscription } = req.body;
+  const result = await User.findByIdAndUpdate(
+    _id,
+    { subscription },
+    { new: true }
+  );
+  res.json({ result });
 };
 
 const updateAvatar = async (req, res) => {
   const { _id } = req.user;
-  // const user = await User.findById({ _id });
-  // if (!user) {
-  //   throw HttpError(401, "Not authorized");
-  // }
   const { path: oldPath, filename } = req.file;
 
   Jimp.read(oldPath).then((image) => {
