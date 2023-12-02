@@ -93,13 +93,19 @@ const updateAvatar = async (req, res) => {
   const { _id } = req.user;
   const { path: oldPath, filename } = req.file;
 
-  Jimp.read(oldPath).then((image) => {
-    image.contain(
-      250,
-      250,
-      Jimp.HORIZONTAL_ALIGN_LEFT | Jimp.VERTICAL_ALIGN_TOP
-    );
-  });
+  // Jimp.read(oldPath).then((image) => {
+  //   image.contain(
+  //     250,
+  //     250,
+  //     Jimp.HORIZONTAL_ALIGN_LEFT | Jimp.VERTICAL_ALIGN_TOP
+  //   );
+  // });
+
+  async function changeImgSize() {
+    const image = await Jimp.read(filename);
+
+    image.resize(250, 250);
+  }
 
   const newPath = path.join(avatarPath, filename);
   await fs.rename(oldPath, newPath);
