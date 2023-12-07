@@ -31,6 +31,8 @@ authRouter.post(
   authController.signin
 );
 
+authRouter.get("/verify/:verificationToken", authController.verify);
+
 authRouter.get("/current", authenticate, authController.getCurrent);
 
 authRouter.post("/logout", authenticate, authController.signout);

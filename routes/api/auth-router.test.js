@@ -21,14 +21,9 @@ describe("test /api/users.register route", () => {
 
   beforeEach(() => {});
 
-  afterEach(async () => {
-    await User.deleteMany();
-  });
-
   test("test /api/users/register with correctData", async () => {
     const signupData = {
-      username: "Olga",
-      email: "olga@gmail.com",
+      email: "test1@gmail.com",
       password: "1234567",
     };
     const { body, statusCode } = await request(app)
@@ -36,11 +31,7 @@ describe("test /api/users.register route", () => {
       .send(signupData);
 
     expect(statusCode).toBe(201);
-    expect(body.username).toBe(signupData.username);
-    expect(body.email).toBe(signupData.email);
-
-    const user = await User.findOne({ email: signupData.email });
-    expect(user.username).toBe(signupData.username);
+    expect(body.user.email).toBe(signupData.email);
   });
 });
 
@@ -62,13 +53,17 @@ describe("test /api/users.login route", () => {
 
   test("test /api/users/login with loginData", async () => {
     const loginData = {
-      email: "test10@gmail.com",
+      email: "test1@gmail.com",
       password: "1234567",
     };
+
+    const user = await User.findOne({ email: loginData.email });
+    await request(app).get(`/api/users/verify/${user.verificationToken}`);
 
     const { body, statusCode } = await request(app)
       .post("/api/users/login")
       .send(loginData);
+    console.log(body);
 
     expect(statusCode).toBe(200);
     expect(body.token).toBeDefined();
