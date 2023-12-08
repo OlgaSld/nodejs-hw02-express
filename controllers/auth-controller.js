@@ -58,11 +58,34 @@ const verify = async (req, res) => {
   }
   await User.findByIdAndUpdate(user._id, {
     verify: true,
-    verificationToken: null,
+    verificationToken: " ",
   });
 
   res.status(200).json({
     message: "Verification successful",
+  });
+};
+
+const resendVerify = async (req, res) => {
+  const { email } = req.body;
+  const user = await User.findOne({ email });
+  if (!user) {
+    throw HttpError(401, "Email was not found");
+  }
+
+  if (user.verify) {
+    throw HttpError(400, "Verification has already been passed");
+  }
+
+  const verifyEmail = {
+    to: email,
+    subject: "Verify email",
+    html: `<a target="_blank" href="${BASE_URL}/api/users/verify/${user.verificationToken}">Click verify email</a>`,
+  };
+  await sendEmail(verifyEmail);
+
+  res.status(200).json({
+    message: "Verification email sent",
   });
 };
 
@@ -150,6 +173,7 @@ const updateAvatar = async (req, res) => {
 export default {
   signup: ctrlWrapper(signup),
   verify: ctrlWrapper(verify),
+  resendVerify: ctrlWrapper(resendVerify),
   signin: ctrlWrapper(signin),
   getCurrent: ctrlWrapper(getCurrent),
   signout: ctrlWrapper(signout),
