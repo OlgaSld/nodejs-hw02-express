@@ -12,6 +12,7 @@ import {
   updSubscriptionSchema,
   userSigninSchema,
   userSignupSchema,
+  userEmailSchema,
 } from "../../models/User.js";
 import authController from "../../controllers/auth-controller.js";
 
@@ -29,6 +30,15 @@ authRouter.post(
   isEmptyBody,
   validateBody(userSigninSchema),
   authController.signin
+);
+
+authRouter.get("/verify/:verificationToken", authController.verify);
+
+authRouter.post(
+  "/verify",
+  isEmptyBody,
+  validateBody(userEmailSchema),
+  authController.resendVerify
 );
 
 authRouter.get("/current", authenticate, authController.getCurrent);

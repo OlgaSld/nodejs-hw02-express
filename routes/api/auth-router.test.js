@@ -7,6 +7,34 @@ import User from "../../models/User.js";
 
 const { DB_TEST_HOST } = process.env;
 
+describe("test /api/users.register route", () => {
+  let server = null;
+  beforeAll(async () => {
+    await mongoose.connect(DB_TEST_HOST);
+    server = app.listen(3000);
+  });
+
+  afterAll(async () => {
+    await mongoose.connection.close();
+    server.close();
+  });
+
+  beforeEach(() => {});
+
+  test("test /api/users/register with correctData", async () => {
+    const signupData = {
+      email: "test1@gmail.com",
+      password: "1234567",
+    };
+    const { body, statusCode } = await request(app)
+      .post("/api/users/register")
+      .send(signupData);
+
+    expect(statusCode).toBe(201);
+    expect(body.user.email).toBe(signupData.email);
+  });
+});
+
 describe("test /api/users.login route", () => {
   let server = null;
   beforeAll(async () => {
@@ -25,13 +53,17 @@ describe("test /api/users.login route", () => {
 
   test("test /api/users/login with loginData", async () => {
     const loginData = {
-      email: "olga@gmail.com",
+      email: "test1@gmail.com",
       password: "1234567",
     };
+
+    const user = await User.findOne({ email: loginData.email });
+    await request(app).get(`/api/users/verify/${user.verificationToken}`);
 
     const { body, statusCode } = await request(app)
       .post("/api/users/login")
       .send(loginData);
+    console.log(body);
 
     expect(statusCode).toBe(200);
     expect(body.token).toBeDefined();
